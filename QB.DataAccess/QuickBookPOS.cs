@@ -9,18 +9,18 @@ namespace QB.DataAccess
     public class QuickBookPOS
     {
 
-        QBPOSSessionManager sessionManager = null;
+        QBPOSSessionManager sessionManager;
 
-        private bool isConnectionOpened = false;
-        private bool isSessionBegined = false;
+        private bool isConnectionOpened;
+        private bool isSessionBegined;
 
-        private short majorVersionQB = 3;
-        private short minorVersionQB = 0;
+        private readonly short majorVersionQB = 3;
+        private readonly short minorVersionQB = 0;
 
-        private string qbAppId = "QuickBooks";
-        private string qbAppName = "QuickBooks";
+        private readonly string qbAppId = "QuickBooks";
+        private readonly string qbAppName = "QuickBooks";
         // Leave it blank for automatically find the POS server
-        private string qbFileName = "Computer Name=estsys17;Company Data=mycompany;Version=12";
+        private readonly string qbFileName = "Computer Name=estsys17;Company Data=mycompany;Version=12";
 
         #region Open and Close Connecion
 
@@ -46,7 +46,7 @@ namespace QB.DataAccess
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Can not Open Connection Or Session !!! \n Please check QuickBook POS is open", ex);
             }
 
         }
@@ -65,7 +65,7 @@ namespace QB.DataAccess
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Can not Close Connection Or Session", ex);
             }
 
         }
@@ -103,8 +103,8 @@ namespace QB.DataAccess
 
                 if (response.StatusCode != 0)
                     throw new Exception($" Error: {response.StatusMessage}");
-                else
-                    return true;
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -460,9 +460,9 @@ namespace QB.DataAccess
                 IResponse response = responseMsgSet.ResponseList.GetAt(0);
 
                 if (response.StatusCode != 0)
-                    throw new Exception($" Error: {response.StatusMessage}");
-                else
-                    return true;
+                    throw new ArgumentNullException("No response", $" Error: {response.StatusMessage}");
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -500,7 +500,6 @@ namespace QB.DataAccess
                 IMsgSetResponse responseMsgSet = sessionManager.DoRequests(requestMsgSet);
                 CloseConnection();
                 IResponse response = responseMsgSet.ResponseList.GetAt(0);
-                IItemInventoryRet itemInventoryRet = (IItemInventoryRet)response.Detail;
 
                 if (response.StatusCode != 0)
                     throw new Exception($" Error: {response.StatusMessage}");
@@ -791,7 +790,7 @@ namespace QB.DataAccess
                 ItemInventoryAddRq.Price1.SetValue(item.Rate);
                 if (item.Name != null)
                     ItemInventoryAddRq.Desc1.SetValue(item.Name);
-                if (item.ListID!= null)
+                if (item.ListID != null)
                     ItemInventoryAddRq.ListID.SetValue(item.ListID);
 
 
@@ -853,7 +852,7 @@ namespace QB.DataAccess
                                     }
                                     if (!string.IsNullOrEmpty(Convert.ToString(ItemInventoryRet.GetAt(j).Desc1)))
                                     {
-                                        item.Name= ItemInventoryRet.GetAt(j).Desc1.GetValue().ToString();
+                                        item.Name = ItemInventoryRet.GetAt(j).Desc1.GetValue().ToString();
                                     }
                                 }
                             }
@@ -1428,7 +1427,7 @@ namespace QB.DataAccess
                                         if (VendorRet != null)
                                         {
                                             if (VendorRet.CompanyName == null) throw new Exception("Vendor dont have Companyname");
-                                                vendor.CompanyName = VendorRet.CompanyName.GetValue();
+                                            vendor.CompanyName = VendorRet.CompanyName.GetValue();
                                             if (VendorRet.ListID != null)
                                                 vendor.VendorList = VendorRet.ListID.GetValue();
                                         }

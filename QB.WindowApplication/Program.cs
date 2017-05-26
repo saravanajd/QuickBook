@@ -14,7 +14,7 @@ namespace QB.WindowApplication
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormQuickBookPOS());
+            Application.Run(new FormGeneralReport());
         }
     }
 }
