@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NuGet.Protocol.VisualStudio</name>
+    </assembly>
+    <members>
+        <member name="T:NuGet.Protocol.VisualStudio.Strings">
+            <summary>
+               A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.ResourceManager">
+            <summary>
+               Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.Culture">
+            <summary>
+               Overrides the current thread's CurrentUICulture property for all
+               resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.ActionExecutor_RollingBack">
+            <summary>
+               Looks up a localized string similar to Install failed. Rolling back....
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.ActionResolver_UnsupportedAction">
+            <summary>
+               Looks up a localized string similar to Unrecognized Package Action &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.ActionResolver_UnsupportedDependencyBehavior">
+            <summary>
+               Looks up a localized string similar to Unsupported Dependency Behavior &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.DownloadActionHandler_InvalidDownloadUrl">
+            <summary>
+               Looks up a localized string similar to The download URL for {0} &apos;{1}&apos; is invalid..
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.DownloadActionHandler_NoDownloadUrl">
+            <summary>
+               Looks up a localized string similar to No download URL could be found for {0}..
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.NuGetRepository_CannotCreateAggregateRepo">
+            <summary>
+               Looks up a localized string similar to Cannot create a NuGet Repository from the Aggregate Source.
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.NuGetServiceProvider_ServiceNotSupported">
+            <summary>
+               Looks up a localized string similar to The {0} service is not supported by this object..
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.PackageActionDescriptionWrapper_UnrecognizedAction">
+            <summary>
+               Looks up a localized string similar to Unrecognized Package Action &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.ProjectInstallationTarget_ProjectIsNotTargetted">
+            <summary>
+               Looks up a localized string similar to The project &apos;{0}&apos; is not one of the projects targetted by this object..
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.Protocol_IndexMissingResourcesNode">
+            <summary>
+               Looks up a localized string similar to Service index document is missing the &apos;resources&apos; property..
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.Protocol_MissingRegistrationBase">
+            <summary>
+               Looks up a localized string similar to The source does not have a Registration Base Url defined!.
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.Protocol_MissingSearchService">
+            <summary>
+               Looks up a localized string similar to The source does not have a Search service!.
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.Protocol_Search_LocalSourceNotFound">
+            <summary>
+               Looks up a localized string similar to The path &apos;{0}&apos; for the selected source could not be resolved..
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.RequiredFeatureUnsupportedException_DefaultMessageWithFeature">
+            <summary>
+               Looks up a localized string similar to The &apos;{0}&apos; installation feature was required by a package but is not supported on the current host..
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.RequiredFeatureUnsupportedException_DefaultMessageWithoutFeature">
+            <summary>
+               Looks up a localized string similar to The installation host does not support a feature required by this package..
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.v2sourceDescription">
+            <summary>
+               Looks up a localized string similar to API v2 (legacy).
+            </summary>
+        </member>
+        <member name="P:NuGet.Protocol.VisualStudio.Strings.v3sourceDescription">
+            <summary>
+               Looks up a localized string similar to API v3.
+            </summary>
+        </member>
+        <member name="T:NuGet.Protocol.VisualStudio.ExtensibleSourceRepositoryProvider">
+            <summary>
+            SourceRepositoryProvider is the high level source for repository objects representing package sources.
+            </summary>
+        </member>
+        <member name="M:NuGet.Protocol.VisualStudio.ExtensibleSourceRepositoryProvider.#ctor">
+            <summary>
+            Public parameter-less constructor for SourceRepositoryProvider
+            </summary>
+        </member>
+        <member name="M:NuGet.Protocol.VisualStudio.ExtensibleSourceRepositoryProvider.#ctor(System.Collections.Generic.IEnumerable{System.Lazy{NuGet.Protocol.Core.Types.INuGetResourceProvider}},NuGet.Configuration.ISettings)">
+            <summary>
+            Public importing constructor for SourceRepositoryProvider
+            </summary>
+        </member>
+        <member name="M:NuGet.Protocol.VisualStudio.ExtensibleSourceRepositoryProvider.#ctor(NuGet.Configuration.IPackageSourceProvider,System.Collections.Generic.IEnumerable{System.Lazy{NuGet.Protocol.Core.Types.INuGetResourceProvider}})">
+            <summary>
+            Non-MEF constructor
+            </summary>
+        </member>
+        <member name="M:NuGet.Protocol.VisualStudio.ExtensibleSourceRepositoryProvider.GetRepositories">
+            <summary>
+            Retrieve repositories
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NuGet.Protocol.VisualStudio.ExtensibleSourceRepositoryProvider.CreateRepository(NuGet.Configuration.PackageSource)">
+            <summary>
+            Create a repository for one time use.
+            </summary>
+        </member>
+        <member name="M:NuGet.Protocol.VisualStudio.ExtensibleSourceRepositoryProvider.CreateRepository(NuGet.Configuration.PackageSource,NuGet.Protocol.FeedType)">
+            <summary>
+            Create a repository for one time use.
+            </summary>
+        </member>
+        <member name="M:NuGet.Protocol.VisualStudio.FactoryExtensionsVS.GetVisualStudio(NuGet.Protocol.Core.Types.Repository.ProviderFactory)">
+            <summary>
+            Core V2 + Core V3 + VS
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.OrderedEquals``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Collections.Generic.IComparer{``1},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two enumberables for equality, ordered according to the specified key and optional comparer. Handles null values gracefully.
+            </summary>
+            <typeparam name="TSource">The type of the list</typeparam>
+            <typeparam name="TKey">The type of the sorting key</typeparam>
+            <param name="self">This list</param>
+            <param name="other">The other list</param>
+            <param name="keySelector">The function to extract the key from each item in the list</param>
+            <param name="orderComparer">An optional comparer for comparing keys</param>
+            <param name="sequenceComparer">An optional comparer for sequences</param>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.SequenceEqualWithNullCheck``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two sequence for equality, allowing either sequence to be null. If one is null, both have to be
+            null for equality.
+            </summary>
+        </member>
+        <member name="T:NuGet.Shared.HashCodeCombiner">
+            <summary>
+            Hash code creator, based on the original NuGet hash code combiner/ASP hash code combiner implementations
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.HashCodeCombiner.GetHashCode(System.Object[])">
+            <summary>
+            Create a unique hash code for the given set of items
+            </summary>
+        </member>
+    </members>
+</doc>

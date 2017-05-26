@@ -1,0 +1,6 @@
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.DataAccess\bin\Debug\QB.DataAccess.dll
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.DataAccess\bin\Debug\QB.DataAccess.pdb
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.DataAccess\bin\Debug\itextsharp.dll
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.DataAccess\obj\Debug\QB.DataAccess.csprojResolveAssemblyReference.cache
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.DataAccess\obj\Debug\QB.DataAccess.dll
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.DataAccess\obj\Debug\QB.DataAccess.pdb

@@ -1,0 +1,440 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NuGet.Resolver</name>
+    </assembly>
+    <members>
+        <member name="T:NuGet.Resolver.CombinationSolver`1">
+            <summary>
+            This class is responsible for finding the best combination of compatible items. The caller
+            supplies a collection of groups, a sorting function (to determine priority within a group), and
+            a function to determine whether two items are incompatible. The solution (if found) will contain
+            exactly 1 item from each group.
+            </summary>
+            <remarks>Created by Aaron Marten</remarks>
+            <typeparam name="T">The type of item to evaluate.</typeparam>
+        </member>
+        <member name="F:NuGet.Resolver.CombinationSolver`1._initialDomains">
+            <summary>
+            The initial domains are the full/initial candidate sets we start with when
+            attempting to discover a solution. They need to be stored and referred to
+            as the algorithm executes to re-initialize the current/working domains.
+            </summary>
+        </member>
+        <member name="F:NuGet.Resolver.CombinationSolver`1._currentDomains">
+            <summary>
+            The current domains are initialized with the initial domains. As we progress
+            through the algorithm, we may remove elements from the current domain as we
+            discover that an item cannot be part of the solution. If we need to backtrack,
+            we may reset the current domain to the corresponding initial domain.
+            </summary>
+        </member>
+        <member name="F:NuGet.Resolver.CombinationSolver`1._conflictSet">
+            <summary>
+            The subset of past indexes where a conflict was found. Used to calculate the biggest and safest
+            (i.e. not missing a better solution) jump we can make in MoveBackward.
+            </summary>
+        </member>
+        <member name="F:NuGet.Resolver.CombinationSolver`1._pastForwardChecking">
+            <summary>
+            For each position, maintain a stack of past indexes that forward checked (and found/removed conflicts)
+            from the position.
+            </summary>
+        </member>
+        <member name="F:NuGet.Resolver.CombinationSolver`1._futureForwardChecking">
+            <summary>
+            For each position, maintain a stack of forward/future indexes where conflicts were found.
+            </summary>
+        </member>
+        <member name="F:NuGet.Resolver.CombinationSolver`1._reductions">
+            <summary>
+            For each position, maintain a Stack of sets of items that were 'reduced' from the domain. This allows us
+            to restore the items back into the domain on future iterations in case we need to back up, etc...
+            </summary>
+        </member>
+        <member name="M:NuGet.Resolver.CombinationSolver`1.FindSolution(System.Collections.Generic.IEnumerable{System.Collections.Generic.IEnumerable{`0}},System.Collections.Generic.IComparer{`0},System.Func{`0,`0,System.Boolean},System.Action{System.Collections.Generic.IEnumerable{`0}})">
+            <summary>
+            Entry point for the combination evalutation phase of the algorithm. The algorithm
+            combines forward checking [FC] (i.e. trying to eliminate future possible combinations to evaluate)
+            with Conflict-directed Back Jumping.
+            Based off the FC-CBJ algorithm described in Prosser's Hybrid
+            Algorithms for the Constraint Satisfaction Problem:
+            http://archive.nyu.edu/bitstream/2451/14410/1/IS-90-10.pdf
+            </summary>
+            <param name="groupedItems">The candidate enlistment items grouped by product.</param>
+            <param name="itemSorter">
+            Function supplied by the caller to sort items in preferred/priority order. 'Higher
+            priority' items should come *first* in the sort.
+            </param>
+            <param name="shouldRejectPairFunc">
+            Function supplied by the caller to determine whether two items are
+            compatible or not.
+            </param>
+            <param name="diagnosticOutput">
+            Used to provide partial solutions to be used for diagnostic messages.
+            </param>
+            <returns>The 'best' solution (if one exists). Null otherwise.</returns>
+        </member>
+        <member name="M:NuGet.Resolver.CombinationSolver`1.MoveForward(System.Int32,System.Boolean@)">
+            <summary>
+            Attempts to populate the element at position i with a consistent possibility
+            and move forward to the next element in the sequence.
+            </summary>
+            <param name="i">The position in the solution to attempt to populate.</param>
+            <param name="consistent">
+            Upon completion, set to true if the function was able to find a candidate to
+            populate position i with. False otherwise.
+            </param>
+            <returns>
+            The next position to evaluate if consistent is true. If false, return value is the value to move
+            back to.
+            </returns>
+        </member>
+        <member name="M:NuGet.Resolver.CombinationSolver`1.MoveBackward(System.Int32,System.Boolean@)">
+            <summary>
+            Attempts to move back in the algorithm from position i.
+            </summary>
+            <param name="i">The position to unset / move back from.</param>
+            <param name="consistent">
+            True if backwards move was successful and algorithm can move forward again. False
+            if the algorithm should continue to move backwards.
+            </param>
+            <returns>The position that the call was able to safely move back to.</returns>
+        </member>
+        <member name="M:NuGet.Resolver.CombinationSolver`1.CheckForward(System.Int32,System.Int32)">
+            <summary>
+            Performs forward checking between the already selected element at position i
+            and potential candidates at position j.
+            </summary>
+            <param name="i">The position of the current element.</param>
+            <param name="j">The position of the future domain to check against.</param>
+            <returns>
+            True if there are still remaining possibilities in the future domain. False if all possibilities
+            have been eliminated.
+            </returns>
+        </member>
+        <member name="M:NuGet.Resolver.CombinationSolver`1.UndoReductions(System.Int32)">
+            <summary>
+            Undo reductions that were previously performed from position i.
+            </summary>
+            <param name="i">The position to undo reductions from.</param>
+        </member>
+        <member name="M:NuGet.Resolver.CombinationSolver`1.UpdateCurrentDomain(System.Int32)">
+            <summary>
+            Reinitialize the current domain to its initial value and apply any reductions against it.
+            </summary>
+            <param name="i">The position of the domain to update.</param>
+        </member>
+        <member name="T:NuGet.Resolver.CompareWrapper`1">
+            <summary>
+            Simple helper class to provide an IComparer instance based on a comparison function
+            </summary>
+            <typeparam name="T">The type to compare.</typeparam>
+        </member>
+        <member name="T:NuGet.Resolver.HashCodeCombiner">
+            <summary>
+            Hash code creator, based on the original NuGet hash code combiner/ASP hash code combiner implementations
+            </summary>
+        </member>
+        <member name="M:NuGet.Resolver.HashCodeCombiner.GetHashCode(System.Object[])">
+            <summary>
+            Create a unique hash code for the given set of items
+            </summary>
+        </member>
+        <member name="T:NuGet.Resolver.PackageResolver">
+            <summary>
+            A core package dependency resolver.
+            </summary>
+            <remarks>Not thread safe</remarks>
+        </member>
+        <member name="M:NuGet.Resolver.PackageResolver.Resolve(NuGet.Resolver.PackageResolverContext,System.Threading.CancellationToken)">
+            <summary>
+            Resolve a package closure
+            </summary>
+        </member>
+        <member name="M:NuGet.Resolver.PackageResolver.RemoveImpossiblePackages(System.Collections.Generic.IEnumerable{NuGet.Protocol.Core.Types.SourcePackageDependencyInfo},System.Collections.Generic.ISet{System.String})">
+            <summary>
+            Remove packages that can't possibly form part of a solution
+            </summary>
+        </member>
+        <member name="M:NuGet.Resolver.PackageResolverContext.#ctor(NuGet.Resolver.DependencyBehavior,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{NuGet.Packaging.PackageReference},System.Collections.Generic.IEnumerable{NuGet.Packaging.Core.PackageIdentity},System.Collections.Generic.IEnumerable{NuGet.Protocol.Core.Types.SourcePackageDependencyInfo},System.Collections.Generic.IEnumerable{NuGet.Configuration.PackageSource},NuGet.Common.ILogger)">
+            <summary>
+            Resolver context
+            </summary>
+            <param name="dependencyBehavior">behavior for non-target packages</param>
+            <param name="targetIds">packages to install or update</param>
+            <param name="requiredPackageIds">packages required in the solution</param>
+            <param name="packagesConfig">existing packages</param>
+            <param name="preferredVersions">preferred package versions or the installed version of a package</param>
+            <param name="availablePackages">all packages from the gather stage</param>
+        </member>
+        <member name="P:NuGet.Resolver.PackageResolverContext.TargetIds">
+            <summary>
+            New packages to install or update. These will prefer the highest version.
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.PackageResolverContext.RequiredPackageIds">
+            <summary>
+            Existing packages that are required, and the target ids that are required.
+            These packages are required for the solution.
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.PackageResolverContext.PackagesConfig">
+            <summary>
+            The existing state of the project from packages.config
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.PackageResolverContext.PreferredVersions">
+            <summary>
+            Preferred versions of each package. If the package does not exist here
+            it will use the dependency behavior, or if it is a target the highest
+            version will be used.
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.PackageResolverContext.AvailablePackages">
+            <summary>
+            All packages available to use in the solution.
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.PackageResolverContext.DependencyBehavior">
+            <summary>
+            Dependency behavior
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.PackageResolverContext.PackageSources">
+            <summary>
+            Package Sources
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.PackageResolverContext.Log">
+            <summary>
+            Logging adapter
+            </summary>
+        </member>
+        <member name="M:NuGet.Resolver.ResolverInputSort.TreeFlatten(System.Collections.Generic.List{System.Collections.Generic.List{NuGet.Resolver.ResolverPackage}},NuGet.Resolver.PackageResolverContext)">
+             <summary>
+             Order package trees into a flattened list
+             
+             Package Id (Parent count)
+             Iteration 1: A(0) -> B(1) -> D(2)
+                          C(0) -> D(2)
+                         [Select A]
+             
+             Iteration 2: B(0) -> D(2)
+                          C(0) -> D(2)
+                         [Select B]
+             
+             Iteration 2: C(0) -> D(1)
+                         [Select C]
+            
+             Result: A, B, C, D
+             </summary>
+        </member>
+        <member name="M:NuGet.Resolver.ResolverInputSort.GetTreeFlattenPriority(System.String,NuGet.Resolver.PackageResolverContext)">
+            <summary>
+            Packages occuring first are more likely to get their preferred version, for this 
+            reason installed packages should go first, then targets.
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.ResolverPackage.Absent">
+            <summary>
+            An absent package represents that the package is not needed in the solution.
+            </summary>
+        </member>
+        <member name="M:NuGet.Resolver.ResolverPackage.FindDependencyRange(System.String)">
+            <summary>
+            Find the version range for the given package. The package may not exist.
+            </summary>
+        </member>
+        <member name="M:NuGet.Resolver.ResolverUtility.GetDiagnosticMessage(System.Collections.Generic.IEnumerable{NuGet.Resolver.ResolverPackage},System.Collections.Generic.IEnumerable{NuGet.Packaging.Core.PackageDependencyInfo},System.Collections.Generic.IEnumerable{NuGet.Packaging.PackageReference},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{NuGet.Configuration.PackageSource})">
+            <summary>
+            Create an error message to describe the primary issue in an invalid solution.
+            </summary>
+            <param name="solution">A partial solution from the resolver</param>
+            <param name="availablePackages">all packages that were available for the solution</param>
+            <param name="packagesConfig">packages already installed in the project</param>
+            <param name="newPackageIds">new packages that are not already installed</param>
+            <returns>A user friendly diagonstic message</returns>
+        </member>
+        <member name="M:NuGet.Resolver.ResolverUtility.FormatDependencyConstraint(NuGet.Resolver.ResolverPackage,System.String)">
+            <summary>
+            Ex: PackageA (> 1.0.0)
+            </summary>
+        </member>
+        <member name="M:NuGet.Resolver.ResolverUtility.GetBrokenDependenciesWithInstalledPackages(NuGet.Resolver.ResolverPackage,System.Collections.Generic.IEnumerable{NuGet.Resolver.ResolverPackage},System.Collections.Generic.IEnumerable{NuGet.Packaging.Core.PackageDependencyInfo},System.Collections.Generic.HashSet{System.String})">
+            <summary>
+            This will try and get broken dependencies for target or it's dependencies WRT installed packages as well as all available packages to install
+            </summary>
+            <param name="package">target package</param>
+            <param name="solution">last best known solution</param>
+            <param name="availablePackages">all available packages from all sources</param>
+            <returns>list of broken dependencies</returns>
+        </member>
+        <member name="M:NuGet.Resolver.ResolverUtility.GetLowestDistanceFromTarget(System.String,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.IEnumerable{NuGet.Resolver.ResolverPackage})">
+            <summary>
+            Find distance of a dependency from a target package.
+            A -> B -> C
+            C is 2 away from A
+            </summary>
+            <param name="packageId">package id</param>
+            <param name="targets">required targets</param>
+            <param name="packages">packages in the solution, only 1 package per id should exist</param>
+            <returns>number of levels from a target</returns>
+        </member>
+        <member name="M:NuGet.Resolver.ResolverUtility.TopologicalSort(System.Collections.Generic.IEnumerable{NuGet.Resolver.ResolverPackage})">
+            <summary>
+            Sort packages in order of dependencies
+            </summary>
+        </member>
+        <member name="M:NuGet.Resolver.ResolverUtility.ShouldRejectPackagePair(NuGet.Resolver.ResolverPackage,NuGet.Resolver.ResolverPackage)">
+            <summary>
+            Check if two packages can exist in the same solution.
+            This is used by the resolver.
+            </summary>
+        </member>
+        <member name="M:NuGet.Resolver.ResolverUtility.FindFirstCircularDependency(System.Collections.Generic.IEnumerable{NuGet.Resolver.ResolverPackage})">
+            <summary>
+            Returns the first circular dependency found for a package. Please sort solution topologically first to improve performance.
+            </summary>
+        </member>
+        <member name="T:NuGet.Resolver.ResolverUtility.QueueNode">
+            <summary>
+            Simple QueueNode class to hold package n it's parent nodes list together
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.ResolverUtility.QueueNode.Package">
+            <summary>
+            Package node
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.ResolverUtility.QueueNode.ParentPackages">
+            <summary>
+            Complete Parent list for the given package
+            </summary>
+        </member>
+        <member name="T:NuGet.Resolver.Strings">
+            <summary>
+               A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.ResourceManager">
+            <summary>
+               Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.Culture">
+            <summary>
+               Overrides the current thread's CurrentUICulture property for all
+               resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.CircularDependencyDetected">
+            <summary>
+               Looks up a localized string similar to Circular dependency detected &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.DependencyConstraint">
+            <summary>
+               Looks up a localized string similar to constraint.
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.DuplicateDependencyIdsError">
+            <summary>
+               Looks up a localized string similar to The package &apos;{0}&apos; version &apos;{1}&apos; declared a duplicate dependency &apos;{2}&apos;. This might mean the package is corrupt or the server metadata for the package is corrupt..
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.FatalError">
+            <summary>
+               Looks up a localized string similar to A fatal error occured while resolving dependencies..
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.InvalidPackageConfig">
+            <summary>
+               Looks up a localized string similar to One or more unresolved package dependency constraints detected in the existing packages.config file. All dependency constraints must be resolved to add or update packages. If these packages are being updated this message may be ignored, if not the following error(s) may be blocking the current package operation: {0}.
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.MissingDependencyInfo">
+            <summary>
+               Looks up a localized string similar to Unable to find package &apos;{0}&apos;. Existing packages must be restored before performing an install or update..
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.NoSolution">
+            <summary>
+               Looks up a localized string similar to Unable to resolve dependencies..
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.PackagesConfigConstraint">
+            <summary>
+               Looks up a localized string similar to &apos;{0}&apos; has an additional constraint {1} defined in {2}..
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.ResolverTotalTime">
+            <summary>
+               Looks up a localized string similar to Resolving dependency information took {0}.
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.UnableToFindCompatibleVersion">
+            <summary>
+               Looks up a localized string similar to Unable to find a version of &apos;{0}&apos; that is compatible with {1}..
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.UnableToResolveDependencyForEmptySource">
+            <summary>
+               Looks up a localized string similar to Unable to resolve dependency &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.UnableToResolveDependencyForMultipleSources">
+            <summary>
+               Looks up a localized string similar to Unable to resolve dependency &apos;{0}&apos;. Source(s) used: {1}..
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.UnknownDependencyBehavior">
+            <summary>
+               Looks up a localized string similar to Unknown DependencyBehavior value..
+            </summary>
+        </member>
+        <member name="P:NuGet.Resolver.Strings.VersionIsNotCompatible">
+            <summary>
+               Looks up a localized string similar to Unable to resolve dependencies. &apos;{0}&apos; is not compatible with {1}..
+            </summary>
+        </member>
+        <member name="T:NuGet.Resolver.NuGetResolverConstraintException">
+            <summary>
+            Constraint exception. Thrown when a solution cannot be found.
+            </summary>
+        </member>
+        <member name="T:NuGet.Resolver.NuGetResolverInputException">
+            <summary>
+            Input validation exception
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.OrderedEquals``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Collections.Generic.IComparer{``1},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two enumberables for equality, ordered according to the specified key and optional comparer. Handles null values gracefully.
+            </summary>
+            <typeparam name="TSource">The type of the list</typeparam>
+            <typeparam name="TKey">The type of the sorting key</typeparam>
+            <param name="self">This list</param>
+            <param name="other">The other list</param>
+            <param name="keySelector">The function to extract the key from each item in the list</param>
+            <param name="orderComparer">An optional comparer for comparing keys</param>
+            <param name="sequenceComparer">An optional comparer for sequences</param>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.SequenceEqualWithNullCheck``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two sequence for equality, allowing either sequence to be null. If one is null, both have to be
+            null for equality.
+            </summary>
+        </member>
+        <member name="T:NuGet.Shared.HashCodeCombiner">
+            <summary>
+            Hash code creator, based on the original NuGet hash code combiner/ASP hash code combiner implementations
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.HashCodeCombiner.GetHashCode(System.Object[])">
+            <summary>
+            Create a unique hash code for the given set of items
+            </summary>
+        </member>
+    </members>
+</doc>

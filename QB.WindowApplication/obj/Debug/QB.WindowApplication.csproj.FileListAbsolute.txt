@@ -1,0 +1,17 @@
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\bin\Debug\QB.WindowApplication.exe.config
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\bin\Debug\QB.WindowApplication.exe
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\bin\Debug\QB.WindowApplication.pdb
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\bin\Debug\itextsharp.dll
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\bin\Debug\QB.DataAccess.dll
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\bin\Debug\QB.DataAccess.pdb
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\obj\Debug\QB.WindowApplication.csprojResolveAssemblyReference.cache
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\obj\Debug\QB.WindowApp.FormExcel.resources
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\obj\Debug\QB.WindowApplication.FormGeneralReport.resources
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\obj\Debug\QB.WindowApplication.FormPDF.resources
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\obj\Debug\QB.WindowApp.FormQuickBook.resources
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\obj\Debug\QB.WindowApplication.FormQuickBookPOS.resources
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\obj\Debug\QB.WindowApplication.FormToPdf.resources
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\obj\Debug\QB.WindowApplication.Properties.Resources.resources
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\obj\Debug\QB.WindowApplication.csproj.GenerateResource.Cache
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\obj\Debug\QB.WindowApplication.exe
+E:\Saravanan\Projects\QB Project\QuickBooks\QB.WindowApplication\obj\Debug\QB.WindowApplication.pdb

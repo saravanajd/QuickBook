@@ -1,0 +1,974 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NuGet.ProjectManagement</name>
+    </assembly>
+    <members>
+        <member name="T:NuGet.ProjectManagement.BuildIntegratedInstallationContext">
+            <summary>
+            Information used by <see cref="T:NuGet.ProjectManagement.Projects.BuildIntegratedNuGetProject"/> when installing a package.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.BuildIntegratedInstallationContext.SuccessfulFrameworks">
+            <summary>
+            Shows the frameworks for which a preview restore operation was successful. Only use it
+            in case of single package install case, and only for CpsPackageReference projects.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.BuildIntegratedInstallationContext.UnsuccessfulFrameworks">
+            <summary>
+            Shows the frameworks for which a preview restore operation was unsuccessful. Only use it
+            in case of single package install case, and only for CpsPackageReference projects.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.BuildIntegratedInstallationContext.OriginalFrameworks">
+            <summary>
+            A mapping to allow the original framework string to fetched. This is important because MSBuild target
+            framework evaluation depends on the target framework string matching exactly.
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.BuildIntegratedPackageReference">
+            <summary>
+            Extends PackageReference to include the original LibraryDependency data.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.BuildIntegratedPackageReference.Dependency">
+            <summary>
+            LibraryDependency from the project.
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.BuildIntegratedPackageReference.#ctor(NuGet.LibraryModel.LibraryDependency,NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Create a PackageReference based on a LibraryDependency.
+            </summary>
+            <param name="dependency">Full PackageReference metadata.</param>
+        </member>
+        <member name="M:NuGet.ProjectManagement.BuildIntegratedPackageReference.GetIdentity(NuGet.LibraryModel.LibraryDependency)">
+            <summary>
+            Convert range to a PackageIdentity
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.BuildIntegratedPackageReference.GetAllowedVersions(NuGet.LibraryModel.LibraryDependency)">
+            <summary>
+            Get allowed version range.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.DependencyGraphCacheContext.DependencyGraphCache">
+            <summary>
+            Unique name to dg
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.DependencyGraphCacheContext.PackageSpecCache">
+            <summary>
+            Unique name to PackageSpec
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.DependencyGraphCacheContext.DirectReferenceCache">
+            <summary>
+            Cache for direct project references of a project
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.DependencyGraphCacheContext.Logger">
+            <summary>
+            Logger
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.IDependencyGraphProject">
+            <summary>
+            Represents the interface necessary for adding a project to a <see cref="T:NuGet.ProjectModel.DependencyGraphSpec"/>-based restore.
+            This interface has logic for creating the <see cref="T:NuGet.ProjectModel.PackageSpec"/> as well as for detecting no-op cases where
+            a restore is not necessary.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.IDependencyGraphProject.MSBuildProjectPath">
+            <summary>
+            Gets the path to the MSBuild project file. This is an absolute path.
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.IDependencyGraphProject.GetPackageSpecsAsync(NuGet.ProjectManagement.DependencyGraphCacheContext)">
+            <summary>
+            Project specs related to this project. This must include the project's own spec, and may
+            optionally include more specs to restore such as tools.
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.INuGetProjectContext">
+            <summary>
+            Comprises of the various client context such as logging, fileconflictaction
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.INuGetProjectContext.Log(NuGet.ProjectManagement.MessageLevel,System.String,System.Object[])">
+            <summary>
+            Logs a message for the given project context
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.INuGetProjectContext.ResolveFileConflict(System.String)">
+            <summary>
+            Resolves a file conflict for the given project context
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.INuGetProjectContext.OriginalPackagesConfig">
+            <summary>
+            The original packages.config. This is set by package management
+            before the actions are executed.
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.MessageLevel">
+            <summary>
+            MessageLevel
+            </summary>
+        </member>
+        <member name="F:NuGet.ProjectManagement.MessageLevel.Info">
+            <summary>
+            Information
+            </summary>
+        </member>
+        <member name="F:NuGet.ProjectManagement.MessageLevel.Warning">
+            <summary>
+            Warning
+            </summary>
+        </member>
+        <member name="F:NuGet.ProjectManagement.MessageLevel.Debug">
+            <summary>
+            Debug only
+            </summary>
+        </member>
+        <member name="F:NuGet.ProjectManagement.MessageLevel.Error">
+            <summary>
+            Error
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.NuGetActionType">
+            <summary>
+            Enum for the type of NuGetAction
+            </summary>
+        </member>
+        <member name="F:NuGet.ProjectManagement.NuGetActionType.Install">
+            <summary>
+            Install
+            </summary>
+        </member>
+        <member name="F:NuGet.ProjectManagement.NuGetActionType.Uninstall">
+            <summary>
+            Uninstall
+            </summary>
+        </member>
+        <member name="F:NuGet.ProjectManagement.NuGetActionType.Reinstall">
+            <summary>
+            Reinstall
+            </summary>
+        </member>
+        <member name="F:NuGet.ProjectManagement.NuGetActionType.Update">
+            <summary>
+            Update
+            </summary>
+        </member>
+        <member name="F:NuGet.ProjectManagement.NuGetActionType.UpdateAll">
+            <summary>
+            UpdateAll
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.LoggerAdapter">
+            <summary>
+            ILogger -> INuGetProjectContext
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.NuGetProject.InstallPackageAsync(NuGet.Packaging.Core.PackageIdentity,NuGet.Protocol.Core.Types.DownloadResourceResult,NuGet.ProjectManagement.INuGetProjectContext,System.Threading.CancellationToken)">
+            <summary>
+            This installs a package into the NuGetProject using the <see cref="!:Stream"/> passed in
+            <param name="downloadResourceResult"></param>
+            should be seekable
+            </summary>
+            <returns>
+            Returns false if the package was already present in the NuGetProject. On successful installation,
+            returns true
+            </returns>
+        </member>
+        <member name="M:NuGet.ProjectManagement.NuGetProject.UninstallPackageAsync(NuGet.Packaging.Core.PackageIdentity,NuGet.ProjectManagement.INuGetProjectContext,System.Threading.CancellationToken)">
+            <summary>
+            This uninstalls the package from the NuGetProject, if found
+            </summary>
+            <returns>Returns false if the package was not found. On successful uninstallation, returns true</returns>
+        </member>
+        <member name="M:NuGet.ProjectManagement.NuGetProject.GetInstalledPackagesAsync(System.Threading.CancellationToken)">
+            <summary>
+            GetInstalledPackages will be used by Dependency Resolver and more
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NuGet.ProjectManagement.NuGetProject.GetUniqueNameOrName(NuGet.ProjectManagement.NuGetProject)">
+            <summary>
+            This static helper method returns the unique name on the project if present
+            Otherwise, returns the name. If name is not present, it will throw
+            </summary>
+            <param name="nuGetProject"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NuGet.ProjectManagement.Strings">
+            <summary>
+               A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.ResourceManager">
+            <summary>
+               Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Culture">
+            <summary>
+               Overrides the current thread's CurrentUICulture property for all
+               resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.AddedPackageToFolder">
+            <summary>
+               Looks up a localized string similar to Added package &apos;{0}&apos; to folder &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.AddedPackageToFolderFromSource">
+            <summary>
+               Looks up a localized string similar to Added package &apos;{0}&apos; to folder &apos;{1}&apos; from source &apos;{2}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.AddedPackageToMSBuildProject">
+            <summary>
+               Looks up a localized string similar to Added package &apos;{0}&apos; to project &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.AddedPackageToPackagesConfig">
+            <summary>
+               Looks up a localized string similar to Added package &apos;{0}&apos; to &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.AddingPackageToFolder">
+            <summary>
+               Looks up a localized string similar to Adding package &apos;{0}&apos; to folder &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.AddingPackageToMSBuildProject">
+            <summary>
+               Looks up a localized string similar to Adding package &apos;{0}&apos; to project &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.AddingPackageWithOnlyDependencies">
+            <summary>
+               Looks up a localized string similar to Adding package &apos;{0}&apos;, which only has dependencies, to project &apos;{1}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.AddingPackageWithOnlyToolsGroup">
+            <summary>
+               Looks up a localized string similar to Adding package &apos;{0}&apos;, which only has tools group, to project &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Argument_Cannot_Be_Null_Or_Empty">
+            <summary>
+               Looks up a localized string similar to Argument cannot be null or empty.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Argument_Must_Be_GreaterThanOrEqualTo">
+            <summary>
+               Looks up a localized string similar to Value must be greater than or equal to {0}.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.ContentFilesShouldNotBeTargetFrameworkSpecific">
+            <summary>
+               Looks up a localized string similar to Content files should not be target framework specific, whereas, &apos;{0}&apos; is.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_AddedFile">
+            <summary>
+               Looks up a localized string similar to Added file &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_AddedFileToFolder">
+            <summary>
+               Looks up a localized string similar to Added file &apos;{0}&apos; to folder &apos;{1}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_RemovedFile">
+            <summary>
+               Looks up a localized string similar to Removed file &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_RemovedFileFromFolder">
+            <summary>
+               Looks up a localized string similar to Removed file &apos;{0}&apos; from folder &apos;{1}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_RemovedFolder">
+            <summary>
+               Looks up a localized string similar to Removed folder &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_TargetFrameworkInfo">
+            <summary>
+               Looks up a localized string similar to &gt;&gt; {0} are being added from &apos;{1}&apos;{2}.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_TargetFrameworkInfo_AssemblyReferences">
+            <summary>
+               Looks up a localized string similar to Assembly references.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_TargetFrameworkInfo_BuildFiles">
+            <summary>
+               Looks up a localized string similar to Build files.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_TargetFrameworkInfo_ContentFiles">
+            <summary>
+               Looks up a localized string similar to Content files.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_TargetFrameworkInfo_NotFrameworkSpecific">
+            <summary>
+               Looks up a localized string similar to (not framework-specific).
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_TargetFrameworkInfo_PowershellScripts">
+            <summary>
+               Looks up a localized string similar to &gt;&gt; PowerShell scripts are being executed from &apos;{0}&apos;{1}.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Debug_TargetFrameworkInfoPrefix">
+            <summary>
+               Looks up a localized string similar to For adding package &apos;{0}&apos; to project &apos;{1}&apos; that targets &apos;{2}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.DependencyDoesNotHaveValidVersion">
+            <summary>
+               Looks up a localized string similar to Dependency &apos;{0}&apos; has invalid version specification..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.ErrorLoadingPackagesConfig">
+            <summary>
+               Looks up a localized string similar to An error occurred while reading file &apos;{0}&apos;: {1}.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.ErrorWritingPackagesConfig">
+            <summary>
+               Looks up a localized string similar to An error occurred while writing file &apos;{0}&apos;: {1}.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.FileConflictMessage">
+            <summary>
+               Looks up a localized string similar to File &apos;{0}&apos; already exists in project &apos;{1}&apos;. Do you want to overwrite it?.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Info_OverwritingExistingFile">
+            <summary>
+               Looks up a localized string similar to Overwriting existing file &apos;{0}&apos;...
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.InvalidProjectName">
+            <summary>
+               Looks up a localized string similar to Unable to determine the project name for &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.NoFolderSpecificToTargetFxFound">
+            <summary>
+               Looks up a localized string similar to Invalid!! Could not find a folder under artifact type &apos;{0}&apos;, so cannot request for artifacts specific to target framework &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.PackageAlreadyExistsInFolder">
+            <summary>
+               Looks up a localized string similar to Package &apos;{0}&apos; already exists in folder &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.PackageAlreadyExistsInPackagesConfig">
+            <summary>
+               Looks up a localized string similar to Package &apos;{0}&apos; already exists in &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.PackageAlreadyExistsInProject">
+            <summary>
+               Looks up a localized string similar to Package &apos;{0}&apos; already exists in project &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.PackageDoesNotExistInFolder">
+            <summary>
+               Looks up a localized string similar to Package &apos;{0}&apos; does not exist in folder &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.PackageDoesNotExistInProject">
+            <summary>
+               Looks up a localized string similar to Package &apos;{0}&apos; does not exist in project &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.PackageDoesNotExisttInPackagesConfig">
+            <summary>
+               Looks up a localized string similar to Package &apos;{0}&apos; does not exists in &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.PackageStreamShouldBeSeekable">
+            <summary>
+               Looks up a localized string similar to Package stream should be seekable.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.ProjectNotLoaded_RestoreFailed">
+            <summary>
+               Looks up a localized string similar to The operation failed as details for project {0} could not be loaded..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.RemovedPackageFromFolder">
+            <summary>
+               Looks up a localized string similar to Removed package &apos;{0}&apos; from folder &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.RemovedPackageFromMSBuildProject">
+            <summary>
+               Looks up a localized string similar to Removed package &apos;{0}&apos; from project &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.RemovedPackageFromPackagesConfig">
+            <summary>
+               Looks up a localized string similar to Removed package &apos;{0}&apos; from &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.RemovingPackageFromFolder">
+            <summary>
+               Looks up a localized string similar to Removing package &apos;{0}&apos; from folder &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.RemovingPackageFromMSBuildProject">
+            <summary>
+               Looks up a localized string similar to Removing package &apos;{0}&apos; from project &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.SolutionDirectoryMustBeRooted">
+            <summary>
+               Looks up a localized string similar to Solution directory &apos;{0}&apos; must be a rooted path..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.TokenHasNoValue">
+            <summary>
+               Looks up a localized string similar to The replacement token &apos;{0}&apos; has no value.
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.UnableToFindCompatibleItems">
+            <summary>
+               Looks up a localized string similar to Could not install package &apos;{0}&apos;. You are trying to install this package into a project that targets &apos;{1}&apos;, but the package does not contain any assembly references or content files that are compatible with that framework. For more information, contact the package author..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Warning_DirectoryNotEmpty">
+            <summary>
+               Looks up a localized string similar to Directory &apos;{0}&apos; is not empty. Skipping....
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Warning_FileAlreadyExists">
+            <summary>
+               Looks up a localized string similar to &apos;{0}&apos; already exists. Skipping....
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.Warning_FileModified">
+            <summary>
+               Looks up a localized string similar to Skipping &apos;{0}&apos; because it was modified..
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Strings.XdtError">
+            <summary>
+               Looks up a localized string similar to An error occurred while applying transformation to &apos;{0}&apos; in project &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.IPackageEventsProvider">
+            <summary>
+            Internal version of the public IVsPackageInstallerEvents
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.PackageEventArgs.#ctor">
+            <summary>
+            Default constructor for events where no info is known
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.PackageEventArgs.Identity">
+            <summary>
+            Package identity
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.PackageEventArgs.InstallPath">
+            <summary>
+            Folder path of the package
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.PackageEventArgs.Project">
+            <summary>
+            Project where the action occurred
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.PackageEvents">
+            <summary>
+            Package events relayed to the public IVsPackageInstallerEvents
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.PackageEvents.PackageInstalling">
+            <summary>
+            Raised when a package is about to be installed into the current solution.
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.PackageEvents.PackageInstalled">
+            <summary>
+            Raised after a package has been installed into the current solution.
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.PackageEvents.PackageUninstalling">
+            <summary>
+            Raised when a package is about to be uninstalled from the current solution.
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.PackageEvents.PackageUninstalled">
+            <summary>
+            Raised after a package has been uninstalled from the current solution.
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.PackageEvents.PackageReferenceAdded">
+            <summary>
+            Raised after a package has been installed into a project within the current solution.
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.PackageEvents.PackageReferenceRemoved">
+            <summary>
+            Raised after a package has been uninstalled from a project within the current solution.
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.PackageEventsProvider">
+            <summary>
+            Provider for the PackageEvents singleton
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.IPackageFileTransformer.TransformFile(System.Func{System.IO.Stream},System.String,NuGet.ProjectManagement.IMSBuildNuGetProjectSystem)">
+            <summary>
+            Transforms the file
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.IPackageFileTransformer.RevertFile(System.Func{System.IO.Stream},System.String,System.Collections.Generic.IEnumerable{NuGet.ProjectManagement.InternalZipFileInfo},NuGet.ProjectManagement.IMSBuildNuGetProjectSystem)">
+            <summary>
+            Reverses the transform on the targetPath, using all the potential source of change
+            </summary>
+            <param name="fileStreamFactory">A factory for accessing the file to be reverted from the nupkg being uninstalled.</param>
+            <param name="targetPath">A path to the file to be reverted.</param>
+            <param name="matchingFiles">Other files in other packages that may have changed the <paramref name="targetPath"/>.</param>
+            <param name="projectSystem">The project where this change is taking place.</param>
+        </member>
+        <member name="T:NuGet.ProjectManagement.Preprocessor">
+            <summary>
+            Simple token replacement system for content files.
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.Projects.BuildIntegratedNuGetProject">
+            <summary>
+            A NuGet integrated MSBuild project.k
+            These projects contain a project.json or package references in CSProj
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Projects.BuildIntegratedNuGetProject.ProjectName">
+            <summary>
+            Project name
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.Projects.BuildIntegratedNuGetProject.GetAssetsFilePathAsync">
+            <summary>
+            Returns the path to the assets file or the lock file.
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.Projects.BuildIntegratedNuGetProject.ExecuteInitScriptAsync(NuGet.Packaging.Core.PackageIdentity,System.String,NuGet.ProjectManagement.INuGetProjectContext,System.Boolean)">
+            <summary>
+            Script executor hook
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.Projects.INuGetIntegratedProject">
+            <summary>
+            A NuGet aware project system
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.Projects.ProjectJsonBuildIntegratedNuGetProject">
+            <summary>
+            A NuGet integrated MSBuild project.k
+            These projects contain a project.json
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.Projects.ProjectJsonBuildIntegratedNuGetProject.#ctor(System.String,System.String)">
+            <summary>
+            Project.json based project system.
+            </summary>
+            <param name="jsonConfig">Path to project.json.</param>
+            <param name="msBuildProjectPath">Path to the msbuild project file.</param>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Projects.ProjectJsonBuildIntegratedNuGetProject.JsonConfigPath">
+            <summary>
+            project.json path
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Projects.ProjectJsonBuildIntegratedNuGetProject.JsonPackageSpec">
+            <summary>
+            Parsed project.json file
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.Projects.ProjectJsonBuildIntegratedNuGetProject.ProjectName">
+            <summary>
+            Project name
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.Projects.ProjectJsonBuildIntegratedNuGetProject.ExecuteInitScriptAsync(NuGet.Packaging.Core.PackageIdentity,System.String,NuGet.ProjectManagement.INuGetProjectContext,System.Boolean)">
+            <summary>
+            Script executor hook
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.Projects.ProjectJsonBuildIntegratedNuGetProject.RemoveDependencyAsync(System.String,NuGet.ProjectManagement.INuGetProjectContext,System.Threading.CancellationToken)">
+            <summary>
+            Uninstall a package from the config file.
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.FolderNuGetProject">
+            <summary>
+            This class represents a NuGetProject based on a folder such as packages folder on a VisualStudio solution
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.FolderNuGetProject.PackageExists(NuGet.Packaging.Core.PackageIdentity)">
+            <summary>
+            A package is considered to exist in FileSystemNuGetProject, if the .nupkg file is present where expected
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.FolderNuGetProject.GetInstalledPackageFilePath(NuGet.Packaging.Core.PackageIdentity)">
+            <summary>
+            Get the path to the package nupkg.
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.FolderNuGetProject.GetInstalledManifestFilePath(NuGet.Packaging.Core.PackageIdentity)">
+            <summary>
+            Get the path to the package nuspec.
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.FolderNuGetProject.GetInstalledPath(NuGet.Packaging.Core.PackageIdentity)">
+            <summary>
+            Get the root directory of an installed package.
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.IMSBuildNuGetProjectSystem.AddReference(System.String)">
+            <summary>
+            Method called when adding an assembly reference to the project.
+            </summary>
+            <param name="referencePath">Physical path to the assembly file relative to the project root.</param>
+        </member>
+        <member name="M:NuGet.ProjectManagement.IMSBuildNuGetProjectSystem.AddFrameworkReference(System.String,System.String)">
+            <summary>
+            Adds an assembly reference to a framework assembly (one in the GAC).
+            </summary>
+            <param name="name">name of the assembly</param>
+        </member>
+        <member name="M:NuGet.ProjectManagement.IMSBuildNuGetProjectSystem.RegisterProcessedFiles(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            This method can be called multiple times during a batch operation in between a single BeginProcessing/EndProcessing calls.
+            </summary>
+            <param name="files">a list of files being changed.</param>
+        </member>
+        <member name="M:NuGet.ProjectManagement.IMSBuildNuGetProjectSystem.GetFullPaths(System.String)">
+            <summary>
+            Returns the list of full paths of the files in the project that match the file name.
+            </summary>
+            <param name="fileName">the file name</param>
+            <returns>The list of full paths.</returns>
+            <remarks>We should combine GetFiles &amp; GetFullPaths into one method.</remarks>
+        </member>
+        <member name="M:NuGet.ProjectManagement.IMSBuildNuGetProjectSystem.GetDirectories(System.String)">
+            <summary>
+            Returns the directories under the directory <paramref name="path" />.
+            </summary>
+            <param name="path">The directory under which to search for subdirectories.</param>
+            <returns>The list of subdirectories in relative path.</returns>
+        </member>
+        <member name="T:NuGet.ProjectManagement.MSBuildNuGetProject">
+            <summary>
+            This class represents a NuGetProject based on a .NET project. This also contains an instance of a
+            FolderNuGetProject
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.MSBuildNuGetProject.PackageInstalling">
+            <summary>
+            Event to be raised while installing a package
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.MSBuildNuGetProject.PackageInstalled">
+            <summary>
+            Event to be raised while installing a package
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.MSBuildNuGetProject.PackageUninstalling">
+            <summary>
+            Event to be raised while installing a package
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.MSBuildNuGetProject.PackageUninstalled">
+            <summary>
+            Event to be raised while installing a package
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.MSBuildNuGetProject.PackageReferenceAdded">
+            <summary>
+            Event to be raised while added references to project
+            </summary>
+        </member>
+        <member name="E:NuGet.ProjectManagement.MSBuildNuGetProject.PackageReferenceRemoved">
+            <summary>
+            Event to be raised while removed references from project
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.PackagesConfigNuGetProject">
+            <summary>
+            Represents a NuGet project as represented by packages.config
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.PackagesConfigNuGetProject.PackagesConfigPath">
+            <summary>
+            Represents the full path to "packages.config"
+            </summary>
+        </member>
+        <member name="P:NuGet.ProjectManagement.PackagesConfigNuGetProject.PackagesProjectNameConfigPath">
+            <summary>
+            Represents the full path to "packages.'projectName'.config"
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.PackagesConfigNuGetProject.PackagesConfigExists">
+            <summary>
+            Checks if there is a packages.config or packages.'projectName'.config file in the current project.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NuGet.ProjectManagement.PackagesConfigNuGetProject.GetPackagesConfig">
+            <summary>
+            Retrieve the packages.config XML.
+            This will return null if the file does not exist.
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.SourceControlManager.CreateFile(System.String,NuGet.ProjectManagement.INuGetProjectContext)">
+            <summary>
+            CreateFile does the following
+            Marks the file for edit if it already exists
+            Calls File.Create which creates a file or opens it if already exists
+            Marks the file for add if it was just created
+            It will perform necessary operations such as undoing pending changes and so on as appropriate
+            </summary>
+            <param name="fullPath"></param>
+            <param name="nuGetProjectContext"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NuGet.ProjectManagement.SourceControlManager.PendAddFiles(System.Collections.Generic.IEnumerable{System.String},System.String,NuGet.ProjectManagement.INuGetProjectContext)">
+            <summary>
+            Marks the files for addition
+            It will perform necessary operations such as undoing pending changes and so on as appropriate
+            </summary>
+            <param name="fullPaths"></param>
+            <param name="nuGetProjectContext"></param>
+        </member>
+        <member name="M:NuGet.ProjectManagement.SourceControlManager.PendDeleteFiles(System.Collections.Generic.IEnumerable{System.String},System.String,NuGet.ProjectManagement.INuGetProjectContext)">
+            <summary>
+            Marks the files for deletion
+            It will perform necessary operations such as undoing pending changes and so on as appropriate
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.SourceControlManager.IsPackagesFolderBoundToSourceControl">
+            <summary>
+            Determines if the packages folder is bound to SourceControl
+            If so, files added to packages folder must be checked-in to SourceControl
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:NuGet.ProjectManagement.TelemetryConstants">
+            <summary>
+            This class contains telemetry events name and properties name.
+            </summary>
+        </member>
+        <member name="T:NuGet.ProjectManagement.TelemetryServiceHelper">
+            <summary>
+            Telemetry helper class to help emit granular level telemetry events for a specific nuget operation.
+            It also provide helper methods to track operation time.
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.TelemetryServiceHelper.StartorResumeTimer">
+            <summary>
+            If measuring detailed telemetry events is enabled then it will start or resume
+            stopwatch timer for current event
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.TelemetryServiceHelper.StopTimer">
+            <summary>
+            If a event timer is running, then it will stop it.
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.TelemetryServiceHelper.GetTimerElapsedTime">
+            <summary>
+            Return current timer elapsed time.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NuGet.ProjectManagement.TelemetryServiceHelper.GetTimerElapsedTimeInSeconds">
+            <summary>
+            Return current timer elapsed time in seconds.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NuGet.ProjectManagement.TelemetryServiceHelper.AddTelemetryEvent(System.String)">
+            <summary>
+            Emit a telemetry event with provided name and use current timer elapsed time.
+            Make sure to start timer before calling this api.
+            </summary>
+            <param name="eventName">Telemetry event name for detailed step</param>
+        </member>
+        <member name="M:NuGet.ProjectManagement.TelemetryServiceHelper.AddTelemetryEvent(System.String,System.Double)">
+            <summary>
+            Emit telemetry event with provided event name and time duration.
+            </summary>
+            <param name="eventName">Telemetry event name</param>
+            <param name="duration">Time duration</param>
+        </member>
+        <member name="T:NuGet.ProjectManagement.BuildIntegratedProjectUtility">
+            <summary>
+            Utilities for project.json
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.BuildIntegratedProjectUtility.GetOrderedProjectPackageDependencies(NuGet.ProjectManagement.Projects.BuildIntegratedNuGetProject)">
+            <summary>
+            Orders all package dependencies in a project.
+            Project must be restored.
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.BuildIntegratedProjectUtility.GetLockFileOrNull(NuGet.ProjectManagement.Projects.BuildIntegratedNuGetProject)">
+            <summary>
+            Read lock file
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.BuildIntegratedProjectUtility.GetLockFileOrNull(System.String)">
+            <summary>
+            Read lock file
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.BuildIntegratedProjectUtility.GetOrderedLockFilePackageDependencies(NuGet.ProjectModel.LockFile)">
+            <summary>
+            Lock file dependencies - packages only
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.BuildIntegratedProjectUtility.GetOrderedLockFileDependencies(NuGet.ProjectModel.LockFile)">
+            <summary>
+            Get ordered dependencies from the lock file
+            </summary>
+            <param name="lockFile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NuGet.ProjectManagement.FileSystemUtility.CreateFile(System.String,System.String,NuGet.ProjectManagement.INuGetProjectContext)">
+            <summary>
+            Creates a file, and adds it to source control.
+            </summary>
+            <param name="root">Root folder.</param>
+            <param name="path">Relative path in the root folder.</param>
+            <param name="nuGetProjectContext">the project context.</param>
+            <returns>A writeable filestream.</returns>
+        </member>
+        <member name="M:NuGet.ProjectManagement.FileSystemUtility.CreateFile(System.String,NuGet.ProjectManagement.INuGetProjectContext)">
+            <summary>
+            Creates a file, and adds it to source control.
+            </summary>
+            <param name="fullPath">Full path to the suggest file.</param>
+            <returns>A writeable filestream.</returns>
+        </member>
+        <member name="M:NuGet.ProjectManagement.FileSystemUtility.CreateFile(System.String)">
+            <summary>
+            Creates a file, but doesn't add it to source control
+            </summary>
+            <param name="fullPath">Full path to the suggest file.</param>
+            <returns>A writeable filestream.</returns>
+        </member>
+        <member name="T:NuGet.ProjectManagement.JsonConfigUtility">
+            <summary>
+            project.json utils
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.JsonConfigUtility.GetDependencies(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Read dependencies from a project.json file
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.JsonConfigUtility.ParseDependency(Newtonsoft.Json.Linq.JToken)">
+            <summary>
+            Convert a dependency entry into an id and version range
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.JsonConfigUtility.AddDependency(Newtonsoft.Json.Linq.JObject,NuGet.Packaging.Core.PackageIdentity)">
+            <summary>
+            Add a dependency to a project.json file
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.JsonConfigUtility.AddDependency(Newtonsoft.Json.Linq.JObject,NuGet.Packaging.Core.PackageDependency)">
+            <summary>
+            Add a dependency to a project.json file
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.JsonConfigUtility.RemoveDependency(Newtonsoft.Json.Linq.JObject,System.String)">
+            <summary>
+            Remove a dependency from a project.json file
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.JsonConfigUtility.GetFrameworks(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Retrieve the NuGetFrameworks under frameworks
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.JsonConfigUtility.SortProperties(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+             Sort child properties
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.MSBuildNuGetProjectSystemUtility.Normalize(NuGet.Packaging.FrameworkSpecificGroup)">
+            <summary>
+            Filter out invalid package items and replace the directory separator with the correct slash for the 
+            current OS.
+            </summary>
+            <remarks>If the group is null or contains only only _._ this method will return the same group.</remarks>
+        </member>
+        <member name="M:NuGet.ProjectManagement.PathUtility.GetRelativePath(System.String,System.String)">
+            <summary>
+            Returns path2 relative to path1
+            </summary>
+        </member>
+        <member name="M:NuGet.ProjectManagement.StreamUtility.ContentEquals(System.IO.Stream,System.IO.Stream)">
+            <summary>
+            Compare the content of the two streams of data, ingoring the content within the
+            NUGET: BEGIN LICENSE TEXT and NUGET: END LICENSE TEXCT markers.
+            </summary>
+            <param name="stream">First stream</param>
+            <param name="otherStream">Second stream which MUST be a seekable stream.</param>
+            <returns>true if the two streams are considered equal.</returns>
+        </member>
+        <member name="M:NuGet.ProjectManagement.StreamUtility.ReadStreamLines(System.IO.Stream)">
+            <summary>
+            Read the specified stream and return all lines, but ignoring those within the
+            NUGET: BEGIN LICENSE TEXT and NUGET: END LICENSE TEXT markers, case-insenstively.
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.OrderedEquals``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Collections.Generic.IComparer{``1},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two enumberables for equality, ordered according to the specified key and optional comparer. Handles null values gracefully.
+            </summary>
+            <typeparam name="TSource">The type of the list</typeparam>
+            <typeparam name="TKey">The type of the sorting key</typeparam>
+            <param name="self">This list</param>
+            <param name="other">The other list</param>
+            <param name="keySelector">The function to extract the key from each item in the list</param>
+            <param name="orderComparer">An optional comparer for comparing keys</param>
+            <param name="sequenceComparer">An optional comparer for sequences</param>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.SequenceEqualWithNullCheck``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two sequence for equality, allowing either sequence to be null. If one is null, both have to be
+            null for equality.
+            </summary>
+        </member>
+        <member name="T:NuGet.Shared.HashCodeCombiner">
+            <summary>
+            Hash code creator, based on the original NuGet hash code combiner/ASP hash code combiner implementations
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.HashCodeCombiner.GetHashCode(System.Object[])">
+            <summary>
+            Create a unique hash code for the given set of items
+            </summary>
+        </member>
+    </members>
+</doc>
