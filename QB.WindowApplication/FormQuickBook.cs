@@ -35,6 +35,8 @@ namespace QB.WindowApp
             cbItem.DisplayMember = "Name";
         }
 
+        #region Connections
+
         private void btnConnect_Click(object sender, EventArgs e)
         {
             try
@@ -98,6 +100,8 @@ namespace QB.WindowApp
 
         }
 
+        #endregion
+
         private void btnCustomer_Click(object sender, EventArgs e)
         {
             try
@@ -126,6 +130,17 @@ namespace QB.WindowApp
                 MessageBox.Show(ex.Message);
             }
         }
+        private void btnCustomerView_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                gvBill.DataSource = qb.ViewCustomer();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
         private void btnBill_Click(object sender, EventArgs e)
         {
@@ -141,15 +156,69 @@ namespace QB.WindowApp
             }
         }
 
-        private void btnCustomerView_Click(object sender, EventArgs e)
+        private void btnBillAdd_Click(object sender, EventArgs e)
         {
             try
             {
-                gvBill.DataSource = qb.ViewCustomer();
+                bill.Address = "Chennai";
+                bill.CustomerListID = cbCustomer.SelectedValue.ToString();
+                bill.Description = "Create Bill Using window app";
+                bill.Memo = "1234";
+                bill.VendorName = "jd";
+                bill.ItemName = cbItem.Text;
+                bill.ItemQuantity = int.Parse(txtItemQuantity.Text);
+                MessageBox.Show(qb.AddBill(bill) ? "Bill Created" : "Unkonwn Error");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnBillBulkAdd_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.InitialDirectory = @"C:\Users\ESTSYS\Downloads";
+            openFileDialog.Filter = "CSV file (*.csv)|*.csv";
+            openFileDialog.FilterIndex = 2;
+            openFileDialog.RestoreDirectory = true;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string fileType = Path.GetExtension(openFileDialog.FileName);
+
+                    DataTable dt = null;
+
+                    if (fileType == ".csv")
+                        dt = FileCSV.ReadCSVFile(openFileDialog.FileName);
+                    //else if (fileType == ".xls")
+                    //    dt = FileExcel.ReadExcelFileUsingStream(openFileDialog.FileName);
+
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+
+                        if (dt.Rows[i]["ListId"].ToString() != null)
+                            bill.CustomerListID = dt.Rows[i]["ListId"].ToString();
+                        if (dt.Rows[i]["Vendor"].ToString() != null)
+                            bill.VendorName = dt.Rows[i]["Vendor"].ToString();
+                        if (dt.Rows[i]["Item"].ToString() != null)
+                            bill.ItemName = dt.Rows[i]["Item"].ToString();
+                        if (dt.Rows[i]["Quantity"].ToString() != null)
+                            bill.ItemQuantity = int.Parse(dt.Rows[i]["Quantity"].ToString());
+                        if (dt.Rows[i]["Address"].ToString() != null)
+                            bill.Address = dt.Rows[i]["Address"].ToString();
+
+                        qb.AddBill(bill);
+                    }
+                    MessageBox.Show("Sales Order Added Successfully");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
             }
         }
 
@@ -213,25 +282,6 @@ namespace QB.WindowApp
             {
                 MessageBox.Show(ex.Message);
                 
-            }
-        }
-
-        private void btnBillAdd_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                bill.Address = "Chennai";
-                bill.CustomerListID = cbCustomer.SelectedValue.ToString();
-                bill.Description = "Create Bill Using window app";
-                bill.Memo = "1234";
-                bill.VendorName = "jd";
-                bill.ItemName = cbItem.Text;
-                bill.ItemQuantity = int.Parse(txtItemQuantity.Text);
-                MessageBox.Show(qb.AddBill(bill) ? "Bill Created" : "Unkonwn Error");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
             }
         }
 
@@ -327,6 +377,52 @@ namespace QB.WindowApp
                 MessageBox.Show(ex.Message);
             }
 
+        }
+
+        private void btnSalesOrderBulkAdd_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.InitialDirectory = @"C:\Users\ESTSYS\Downloads";
+            openFileDialog.Filter = "CSV file (*.csv)|*.csv";
+            openFileDialog.FilterIndex = 2;
+            openFileDialog.RestoreDirectory = true;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string fileType = Path.GetExtension(openFileDialog.FileName);
+
+                    DataTable dt = null;
+
+                    if (fileType == ".csv")
+                        dt = FileCSV.ReadCSVFile(openFileDialog.FileName);
+                    //else if (fileType == ".xls")
+                    //    dt = FileExcel.ReadExcelFileUsingStream(openFileDialog.FileName);
+
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        if (dt.Rows[i]["ListId"].ToString() != null)
+                            salesOrder.CustomerRefListID  = dt.Rows[i]["ListId"].ToString();
+                        if (dt.Rows[i]["CustomerName"].ToString() != null)
+                            salesOrder.CustomerName = dt.Rows[i]["CustomerName"].ToString();
+                        if (dt.Rows[i]["Item"].ToString() != null)
+                            salesOrder.ItemName= dt.Rows[i]["Item"].ToString();
+                        if (dt.Rows[i]["Quantity"].ToString() != null)
+                            salesOrder.ItemOrdered = int.Parse(dt.Rows[i]["Quantity"].ToString());
+                        if (dt.Rows[i]["Address"].ToString() != null)
+                            salesOrder.Address = dt.Rows[i]["Address"].ToString();
+
+                        qb.AddSalesOrder(salesOrder);
+                    }
+                    MessageBox.Show("Sales Order Added Successfully");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
         }
 
         private void btnInvoiceBulkAdd_Click(object sender, EventArgs e)
@@ -502,5 +598,6 @@ namespace QB.WindowApp
                 MessageBox.Show(ex.Message);
             }
         }
+      
     }
 }

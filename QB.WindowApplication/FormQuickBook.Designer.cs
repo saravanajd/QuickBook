@@ -93,6 +93,8 @@
             this.txtCustomFieldName = new System.Windows.Forms.TextBox();
             this.btnViewCustCustomer = new System.Windows.Forms.Button();
             this.btnAddCustCustomer = new System.Windows.Forms.Button();
+            this.btnSalesOrderBulkAdd = new System.Windows.Forms.Button();
+            this.btnBillBulkAdd = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -309,6 +311,8 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.btnBillBulkAdd);
+            this.groupBox6.Controls.Add(this.btnSalesOrderBulkAdd);
             this.groupBox6.Controls.Add(this.dtTo);
             this.groupBox6.Controls.Add(this.dtFrom);
             this.groupBox6.Controls.Add(this.btnInvoiceBulkAdd);
@@ -751,6 +755,26 @@
             this.btnAddCustCustomer.UseVisualStyleBackColor = true;
             this.btnAddCustCustomer.Click += new System.EventHandler(this.btnAddCustCustomer_Click);
             // 
+            // btnSalesOrderBulkAdd
+            // 
+            this.btnSalesOrderBulkAdd.Location = new System.Drawing.Point(216, 164);
+            this.btnSalesOrderBulkAdd.Name = "btnSalesOrderBulkAdd";
+            this.btnSalesOrderBulkAdd.Size = new System.Drawing.Size(114, 32);
+            this.btnSalesOrderBulkAdd.TabIndex = 23;
+            this.btnSalesOrderBulkAdd.Text = "Bulk SalesOrder Add";
+            this.btnSalesOrderBulkAdd.UseVisualStyleBackColor = true;
+            this.btnSalesOrderBulkAdd.Click += new System.EventHandler(this.btnSalesOrderBulkAdd_Click);
+            // 
+            // btnBillBulkAdd
+            // 
+            this.btnBillBulkAdd.Location = new System.Drawing.Point(216, 244);
+            this.btnBillBulkAdd.Name = "btnBillBulkAdd";
+            this.btnBillBulkAdd.Size = new System.Drawing.Size(114, 32);
+            this.btnBillBulkAdd.TabIndex = 24;
+            this.btnBillBulkAdd.Text = "Bulk Bill Add";
+            this.btnBillBulkAdd.UseVisualStyleBackColor = true;
+            this.btnBillBulkAdd.Click += new System.EventHandler(this.btnBillBulkAdd_Click);
+            // 
             // FormQuickBook
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -855,5 +879,7 @@
         private System.Windows.Forms.Button btnAddCustItem;
         private System.Windows.Forms.Button btnViewCustVendor;
         private System.Windows.Forms.Button btnAddCustVendor;
+        private System.Windows.Forms.Button btnBillBulkAdd;
+        private System.Windows.Forms.Button btnSalesOrderBulkAdd;
     }
 }

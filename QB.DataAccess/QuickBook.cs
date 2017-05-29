@@ -18,8 +18,9 @@ namespace QB.DAL
         private readonly short majorVersionQB = 13;
         private readonly short minorVersionQB = 0;
 
-        public string appName = "MyCompany";
-        private string companyFilePath = @"C:\Users\Public\Documents\Intuit\QuickBooks\sampl\MyCompany.qbw";
+        private readonly string appName = "MyCompany";
+        private readonly string appID = "QBFC";
+        private readonly string companyFilePath = @"C:\Users\Public\Documents\Intuit\QuickBooks\sampl\MyCompany.qbw";
 
 
         #region Open Connection And Colse Connection
@@ -34,13 +35,13 @@ namespace QB.DAL
                 }
                 if (!isConnectionOpened)
                 {
-                    sessionManager.OpenConnection(companyFilePath, appName);
+                    sessionManager.OpenConnection(appID, appName);
                     isConnectionOpened = true;
                 }
 
                 if (!isSessionBegined)
                 {
-                    sessionManager.BeginSession("", ENOpenMode.omDontCare);
+                    sessionManager.BeginSession(companyFilePath, ENOpenMode.omDontCare);
                     isSessionBegined = true;
                 }
             }
@@ -1591,6 +1592,7 @@ namespace QB.DAL
                         ENResponseType responseType = (ENResponseType)response.Type.GetValue();
                         if (responseType == ENResponseType.rtSalesOrderQueryRs)
                         {
+                            isVerified = true;
                             ISalesOrderRetList SalesOrderRet = (ISalesOrderRetList)response.Detail;
                             for (int j = 0; j < SalesOrderRet.Count; j++)
                             {
